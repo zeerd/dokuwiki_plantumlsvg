@@ -1,0 +1,7 @@
+base    plantumlsvg
+author  Charles Chan
+email   charles@zeerd.com
+date    2021-03-04
+name    PlantUML-SVG plugin
+desc    Draws UML graphs directly into the wiki using PlantUML http://plantuml.sourceforge.net
+url     http://www.dokuwiki.org/plugin:plantumlsvg
