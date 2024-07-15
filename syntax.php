@@ -73,7 +73,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
             $return['title'] = $matches[1];
         }
 
-	// type
+        // type
         if (preg_match('/\b(?:type|y)=(\w+)\b/i', $conf, $matches)) {
             // single word titles
             $return['type'] = $matches[1];
@@ -88,7 +88,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
         if($return['type'] == "mindmap") {
             io_saveFile($this->_cachename($return, 'txt'), "@startmindmap\n$input\n@endmindmap");
         }
-	else if($return['type'] == "gantt") {
+        else if($return['type'] == "gantt") {
             io_saveFile($this->_cachename($return, 'txt'), "@startgantt\n$input\n@endgantt");
         }
         else {
@@ -110,7 +110,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
      * Create Output
      */
     function render($mode, Doku_Renderer $renderer, $data) {
-        // $this->_log($mode);	    
+        // $this->_log($mode);        
         if($this->exec_disabled()) {
             $renderer->doc .= "[PHP disbaled exec function.]";
         } else if ($mode == 'xhtml') {
@@ -120,7 +120,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
             $svg = strstr($svg, '<svg');
             $align = self::$cssAlign[$data['align']];
             $svg = str_replace('<svg', '<svg class="plantumlsvg '.$align.'"', $svg);
-	    // $svg = $this->_prepare($svg);
+            // $svg = $this->_prepare($svg);
 
             $renderer->doc .= '<div style="margin-bottom: 1.4em;">';
             $renderer->doc .= $svg;
@@ -130,7 +130,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
                 $big = '<a title="' . $data['title'] . '" class="media" href="' . $img . '"  target="_blank">查看原图</a>';
                 $big = '<div style="text-align: right;">' . $big . '</div>';
                 $renderer->doc .= $big;
-	    }
+            }
 
             $renderer->doc .= '</div>';
 
@@ -138,7 +138,7 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
             return false;
         }
 
-	return true;
+        return true;
     }
 
     function _prepare( $text )
@@ -155,28 +155,28 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
                     $p1 = $match[1];
                 }
                 else {
-		    $p1 =  preg_replace_callback(
-                         '/
+                    $p1 =  preg_replace_callback(
+                        '/
                              ([^][|#]*)    # The page_id
                              (\\#[^]|]*)?  # #Anchor
                              (\\|[^]]*)?   # |description optional
-                         /x',
-                         function( $match ) {
-                             // $this->_log("-->\"".$match[0]."\"");
-                             if(strlen($match[2]) > 0) {
-                                 $anchor = "#" . cleanID($match[2]);
-                             }
-			     $url = wl( cleanID($match[1]), '', true ) . $anchor;
-			     // $this->_log($url);
-			     return $url;
-                         },
-	  	         $match[1], 1);
-		}
-		return '[[' . $p1 . ' ' . $match[2]. ']]';
+                        /x',
+                        function( $match ) {
+                            // $this->_log("-->\"".$match[0]."\"");
+                            if(strlen($match[2]) > 0) {
+                                $anchor = "#" . cleanID($match[2]);
+                            }
+                            $url = wl( cleanID($match[1]), '', true ) . $anchor;
+                            // $this->_log($url);
+                            return $url;
+                        },
+                    $match[1], 1);
+                }
+                return '[[' . $p1 . ' ' . $match[2]. ']]';
             },
             $text);
-	 // $this->_log("+++>".$r);   
-         return $r;
+        // $this->_log("+++>".$r);   
+        return $r;
     }
 
     /**
@@ -188,18 +188,17 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
 
         // create the file if needed
         if (!file_exists($cache)) {
-	    // $this->_log("creating ".$cache);	
-	    $in = $this->_cachename($data, 'txt');
-	    $uml = io_readFile($in, false);
-	    $uml = $this->_prepare($uml);
+            // $this->_log("creating ".$cache);    
+            $in = $this->_cachename($data, 'txt');
+            $uml = io_readFile($in, false);
+            $uml = $this->_prepare($uml);
             io_saveFile($in, $uml);
 
             $ok = $this->_local($data, $in, $cache, $ext);
-
-	    if (!$ok) {
+            if (!$ok) {
                 // $this->_log("failed to create ".$cache);
                 return false;
-	    }
+            }
             clearstatcache();
         }
 
@@ -218,6 +217,9 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
         $java = $this->getConf('java');
         $jar = $this->getConf('jar');
         $tmpl = DOKU_PLUGIN .'/plantumlsvg/' . $this->getConf('theme');
+        if (!file_exists($tmpl)) {
+            $tmpl = wikiFN($this->getConf('theme'));
+        }
         $jar = realpath($jar);
         $jar = escapeshellarg($jar);
 
@@ -227,15 +229,15 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
         $command .= ' -Djava.awt.headless=true';
         $command .= ' -Dfile.encoding=UTF-8';
         $command .= " -jar $jar";
-	$command .= ' -charset UTF-8';
-	$command .= ' -t'.$ext;
+        $command .= ' -charset UTF-8';
+        $command .= ' -t'.$ext;
         if (file_exists($tmpl)) {
             $command .= ' -I'. $tmpl;
         }
-	$command .= ' ' . escapeshellarg($in);
+        $command .= ' ' . escapeshellarg($in);
         $command .= ' 2>&1';
 
-	// $this->_log("+++>".$command);
+    // $this->_log("+++>".$command);
         exec($command, $output, $return_value);
 
         if ($return_value == 0) {
