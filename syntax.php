@@ -85,10 +85,10 @@ class syntax_plugin_plantumlsvg extends DokuWiki_Syntax_Plugin {
         $input = join("\n", $lines);
         $return['md5'] = md5($input);
 
-        if($return['type'] == "mindmap") {
+        if(isset($return['type']) && $return['type'] == "mindmap") {
             io_saveFile($this->_cachename($return, 'txt'), "@startmindmap\n$input\n@endmindmap");
         }
-        else if($return['type'] == "gantt") {
+        else if(isset($return['type']) && $return['type'] == "gantt") {
             io_saveFile($this->_cachename($return, 'txt'), "@startgantt\n$input\n@endgantt");
         }
         else {
